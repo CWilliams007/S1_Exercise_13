@@ -57,19 +57,43 @@
 // run init function when window loads
 window.onload = init;
 
+
 function init() {
-      // insert the title for the first puzzle
+      //insert the title for the first puzzle
       document.getElementById("puzzleTitle").innerHTML = "Puzzle 1";
 
-      //insert html code fot he first puzzle table
-      document.getElementById("puzzle").innerHTML = drawPuzzle(puzzleHint, puzzleRating, puzzle1);
+      //insert the HTML code for the first puzzle table
+      document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
 
+      //add event handlers for the puzzle buttons
+      var puzzleButtons = document.getElementsByClassName("puzzles");
+      for (var i = 0; i < puzzleButtons.length; i++) {
+            puzzleButtons[i].onclick = swapPuzzle;
+      }
 }
 
-var puzzleButtons = document.getElementsByClassName("puzzles");
-for (var i = 0; i < puzzleButtons.length; i++) {
-      puzzleButtons[i].onclick = swapPuzzle;
+function swapPuzzle(e) {
+
+      // retieve the ID of the clicked button
+      var puzzleID = e.target.id;
+
+      //retrieve the value of the clicked button
+      var puzzleTitle = e.target.value;
+      document.getElementById("puzzleTitle").innerHTML = puzzleTitle;
+
+      //display the puzzle based on the value of the puzzleID variable
+      switch (puzzleID) {
+            case "puzzle1":
+                  document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
+                  break;
+            case "puzzle2":
+                  document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle2Hint, puzzle2Rating, puzzle2);
+                  break;
+            default:
+                  break;
+      }
 }
+
 
 
 
