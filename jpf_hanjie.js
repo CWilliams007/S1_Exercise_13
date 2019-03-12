@@ -54,221 +54,255 @@
 	
 */
 
-// run init function when window loads
-window.onload = init;
+window.onload = init();
 
 var puzzleCells;
+
 var cellBackground;
 
-// var hello = function () {
-//       alert("Hello");
-// }
-
-// console.log(hello);
-
 function init() {
-      //insert the title for the first puzzle
+      // Inserts the title for the first puzzle 
       document.getElementById("puzzleTitle").innerHTML = "Puzzle 1";
 
-      //insert the HTML code for the first puzzle table
+      // Inserts the HTML code for the first puzzle table. 
       document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
 
-      //add event handlers for the puzzle buttons
+      //Add event handlers for the puzzle buttons 
       var puzzleButtons = document.getElementsByClassName("puzzles");
+
+      // Loops through every object in the puzzleButtons array 
       for (var i = 0; i < puzzleButtons.length; i++) {
             puzzleButtons[i].onclick = swapPuzzle;
       }
       setupPuzzle();
+
+      // Adds an event listener for the mouseup event 
+      document.addEventListener("mouseup", endBackground);
+
+      // Add an event listener to "Show Solution" button 
+      document.getElementById("solve").addEventListener("click", function () {
+            // Remove the inline background color style from each cell 
+            for (var i = 0; i < puzzleCells.length; i++) {
+                  puzzleCells[i].style.backgroundColor = "";
+            }
+      });
 }
 
-//add an event listener for the mouseup event
-document.addEventListener("mouseup", endBackground);
-
-// add event listener to show solution button
-document.getElementById("solve").addEventListener("click", function () {
-      // remove inline background color style from each cell
-      for (var i = 0; i < puzzleCells.length; i++) {
-            puzzleCells[i].style.backgroundColor = "";
-      }
-});
-
 function swapPuzzle(e) {
+      if (confirm("You will lose all of your work on the puzzle! Continue?")) {
+            // Retrieve the ID of the clicked button 
+            var puzzleID = e.target.id;
 
-      // retieve the ID of the clicked button
-      var puzzleID = e.target.id;
+            // Retrieve the value of the clicked button 
+            var puzzleTitle = e.target.value;
 
-      //retrieve the value of the clicked button
-      var puzzleTitle = e.target.value;
-      document.getElementById("puzzleTitle").innerHTML = puzzleTitle;
+            document.getElementById("puzzleTitle").innerHTML = puzzleTitle;
 
-      //display the puzzle based on the value of the puzzleID variable
-      switch (puzzleID) {
-            case "puzzle1":
-                  document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
-                  break;
-            case "puzzle2":
-                  document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle2Hint, puzzle2Rating, puzzle2);
-                  break;
-            case "puzzle3":
-                  document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle3Hint, puzzle3Rating, puzzle3);
-                  break;
+            // Displays the puzzle based on the value of the puzzleID variable 
+            switch (puzzleID) {
+                  case "puzzle1":
+                        document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
+                        break;
+                  case "puzzle2":
+                        document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle2Hint, puzzle2Rating, puzzle2);
+                        break;
+                  case "puzzle3":
+                        document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle3Hint, puzzle3Rating, puzzle3);
+            }
+
+            setupPuzzle();
+
       }
-      setupPuzzle();
 }
 
 function setupPuzzle() {
-      //match all of the data cells in the puzzle
+      // Match all of the data cells
       puzzleCells = document.querySelectorAll("table#hanjieGrid td");
 
-      //set the initial color of each cell to gold
+      // Set the initial color of each cell to gold 
       for (var i = 0; i < puzzleCells.length; i++) {
             puzzleCells[i].style.backgroundColor = "rgb(233, 207, 29)";
-            //set the cell background color in response to the mousedown event
+
+            // Set the cell background color in reposonse to the mousedown event 
             puzzleCells[i].onmousedown = setBackground;
+
+            // Use a pencil image as the cursor 
+            puzzleCells[i].style.cursor = "url(jpf_pencil.png), pointer";
       }
-      // create object collections of filled and empty cells
+
+      // Create object collections of the filled and empty cells 
       var filled = document.querySelectorAll("table#hanjieGrid td.filled");
       var empty = document.querySelectorAll("table#hanjieGrid td.empty");
 
-      // create an event listener to highlight incorrect cells
-      document.getElementByID("peek".addEventListener("click", function () {
-                  // display inccorect white cells in pink
-                  for (var i = 0; i < filled.length; i++) {
-                        if (filled[i].style.backgroundColor === "rgb(255,255,255")
-                              filled[i].style.backgroundColor = "rgb(255,211,211";
+      // Creates an event listener to highlight incorrect cells 
+      document.getElementById("peek").addEventListener("click", function () {
+            // Display incorrect white cells
+            for (var i = 0; i < filled.length; i++) {
+                  if (filled[i].style.backgroundColor === "rgb(255, 255, 255)") {
+                        filled[i].style.backgroundColor = "rgb(255, 211, 211)";
                   }
-            });
-      }
-
-      function setBackground(e) {
-            // cellBackground = "rgb(101, 101, 101)";
-            // set the background based on the keyboard event
-            if (e.shiftKey) {
-                  cellBackground = "rgb(233, 207, 23";
-            } else if (e.altKey) {
-                  cellBackground = "rgb(255, 255, 255)";
-            } else {
-                  cellBackground = "rgb(101, 101, 101)";
             }
-            e.target.style.backgroundColor = cellBackground;
 
-            //create an event listener for every puzzle cell
+            // Display incorrect gray cells
+            for (var i = 0; i < empty.length; i++) {
+                  if (empty[i].style.backgroundColor === "rgb(101, 101, 101)") {
+                        empty[i].style.backgroundColor = "rgb(255, 101, 101)";
+                  }
+            }
+
+            // Remove the hint
+            setTimeout(
+                  function () {
+                        for (var i = 0; i < puzzleCells.length; i++) {
+                              if (puzzleCells[i].style.backgroundColor === "rgb(255, 211, 211)") {
+                                    puzzleCells[i].style.backgroundColor = "rgb(255, 255, 255)";
+                              }
+
+                              if (puzzleCells[i].style.backgroundColor === "rgb(255, 101, 101)") {
+                                    puzzleCells[i].style.backgroundColor = "rgb(101, 101, 101)";
+                              }
+                        }
+                  }, 500);
+      });
+      // Check the puzzle solution 
+      document.getElementById("hanjieGrid").addEventListener("mouseup", function () {
+            var solved = true;
             for (var i = 0; i < puzzleCells.length; i++) {
-                  puzzleCells[i].addEventListener("mouseenter", extendBackground);
+                  if ((puzzleCells[i].className === "filled" && puzzleCells[i].style.backgroundColor !== "rgb(101, 101, 101)") || (puzzleCells[i].className === "empty" && puzzleCells[i].style.backgroundColor === "rgb(101, 101, 101)")) {
+                        solved = false;
+                        break;
+                  }
             }
 
-            // prevent default action of selecting table text (propagation)
-            e.preventDefault();
-      }
-
-      function extendBackground(e) {
-            e.target.style.backgroundColor = cellBackground;
-      }
-
-      function endBackground() {
-            //remove the vent listener for every puzzle cell
-            for (var i = 0; i < puzzleCells.length; i++) {
-                  puzzleCells[i].removeEventListener("mouseenter", extendBackground);
+            if (solved) {
+                  alert("You solved the puzzle!");
             }
+      });
+}
+
+function setBackground(e) {
+      var cursorType;
+
+      // Set the background based on the keyboard event 
+      if (e.shiftKey) {
+            cellBackground = "rgb(233, 207, 29)";
+            cursorType = "url(jpf_eraser.png), cell";
+      } else if (e.altKey) {
+            cellBackground = "rgb(255, 255, 255)";
+            cursorType = "url(jpf_cross.png), crosshair";
+      } else {
+            cellBackground = "rgb(101, 101, 101)";
+            cursorType = "url(jpf_pencil.png), pointer";
       }
 
+      e.target.style.backgroundColor = cellBackground;
+
+      // Create an event listener for every puzzle cell 
+      for (var i = 0; i < puzzleCells.length; i++) {
+            puzzleCells[i].addEventListener("mouseenter", extendBackground);
+            puzzleCells[i].style.cursor = cursorType;
+      }
+
+      // Prevents the default action of selecting table text 
+      e.preventDefault();
+}
+
+function extendBackground(e) {
+      e.target.style.backgroundColor = cellBackground;
+}
+
+function endBackground() {
+      // Removes the event listener for every puzzle cell 
+      for (var i = 0; i < puzzleCells.length; i++) {
+            puzzleCells[i].removeEventListener("mouseenter", extendBackground);
+      }
+}
 
 
 
-      /* ================================================================= */
 
-      function drawPuzzle(hint, rating, puzzle) {
+/* ================================================================= */
 
-            /* Initial HTML String for the Hanjie Puzzle */
-            var htmlString = "";
+function drawPuzzle(hint, rating, puzzle) {
 
-            /* puzzle is a multidimensional array containing the
-               Hanjie puzzle layout. Marked cells are indicated by
-               the # character. Empty cells are indicated by an
-               empty text string. First, determine the number of rows
-               and columns in the puzzle */
+      var htmlString = "";
 
-            var totalRows = puzzle.length;
-            var totalCols = puzzle[0].length;
+      var totalRows = puzzle.length;
+      var totalCols = puzzle[0].length;
 
-            /* Loop through the rows to create the rowCount array
-               containing the totals for each row in the puzzle */
+      /* Loop through the rows to create the rowCount array*/
 
-            var rowCount = [];
-            var spaceCount;
+      var rowCount = [];
+      var spaceCount;
+      for (var i = 0; i < totalRows; i++) {
+            rowCount[i] = "";
+            spaceCount = 0;
+
+            for (var j = 0; j < totalCols; j++) {
+                  if (puzzle[i][j] === "#") {
+                        spaceCount++;
+                        if (j === totalCols - 1) {
+                              rowCount[i] += spaceCount + "&nbsp;&nbsp;";
+                        }
+                  } else {
+                        if (spaceCount > 0) {
+                              rowCount[i] += spaceCount + "&nbsp;&nbsp;";
+                              spaceCount = 0;
+                        }
+                  }
+            }
+
+      }
+
+      /* Loop through the columns to create the colCount array */
+
+      var colCount = [];
+      for (var j = 0; j < totalCols; j++) {
+            colCount[j] = "";
+            spaceCount = 0;
+
             for (var i = 0; i < totalRows; i++) {
-                  rowCount[i] = "";
-                  spaceCount = 0;
-
-                  for (var j = 0; j < totalCols; j++) {
-                        if (puzzle[i][j] === "#") {
-                              spaceCount++;
-                              if (j === totalCols - 1) {
-                                    rowCount[i] += spaceCount + "&nbsp;&nbsp;";
-                              }
-                        } else {
-                              if (spaceCount > 0) {
-                                    rowCount[i] += spaceCount + "&nbsp;&nbsp;";
-                                    spaceCount = 0;
-                              }
+                  if (puzzle[i][j] === "#") {
+                        spaceCount++;
+                        if (i === totalRows - 1) {
+                              colCount[j] += spaceCount + "<br />";
+                        }
+                  } else {
+                        if (spaceCount > 0) {
+                              colCount[j] += spaceCount + "<br />";
+                              spaceCount = 0;
                         }
                   }
-
             }
 
-            /* Loop through the columns to create the colCount array
-               containing the totals for each column in the puzzle */
+      }
 
-            var colCount = [];
+      /* Create a Web table for rows and empty cells*/
+
+      htmlString = "<table id='hanjieGrid'>";
+      htmlString += "<caption>" + hint + " (" + rating + ")</caption>";
+      htmlString += "<tr><th></th>";
+
+      for (var j = 0; j < totalCols; j++) {
+            htmlString += "<th class='cols'>" + colCount[j] + "</th>";
+      }
+      htmlString += "</tr>";
+
+      for (var i = 0; i < totalRows; i++) {
+            htmlString += "<tr><th class='rows'>&nbsp;" + rowCount[i] + "</th>";
+
             for (var j = 0; j < totalCols; j++) {
-                  colCount[j] = "";
-                  spaceCount = 0;
-
-                  for (var i = 0; i < totalRows; i++) {
-                        if (puzzle[i][j] === "#") {
-                              spaceCount++;
-                              if (i === totalRows - 1) {
-                                    colCount[j] += spaceCount + "<br />";
-                              }
-                        } else {
-                              if (spaceCount > 0) {
-                                    colCount[j] += spaceCount + "<br />";
-                                    spaceCount = 0;
-                              }
-                        }
+                  if (puzzle[i][j] === "#") {
+                        htmlString += "<td  class='filled'></td>";
+                  } else {
+                        htmlString += "<td class='empty'></td>";
                   }
-
             }
 
-            /* Create a Web table with the id, hanjieGrid, containing
-               headers with the row and column totals.
-               Each marked cell has the class name, marked; each
-               empty cell has the class name, empty */
-
-            htmlString = "<table id='hanjieGrid'>";
-            htmlString += "<caption>" + hint + " (" + rating + ")</caption>";
-            htmlString += "<tr><th></th>";
-
-            for (var j = 0; j < totalCols; j++) {
-                  htmlString += "<th class='cols'>" + colCount[j] + "</th>";
-            }
             htmlString += "</tr>";
-
-            for (var i = 0; i < totalRows; i++) {
-                  htmlString += "<tr><th class='rows'>&nbsp;" + rowCount[i] + "</th>";
-
-                  for (var j = 0; j < totalCols; j++) {
-                        if (puzzle[i][j] === "#") {
-                              htmlString += "<td  class='filled'></td>";
-                        } else {
-                              htmlString += "<td class='empty'></td>";
-                        }
-                  }
-
-                  htmlString += "</tr>";
-            }
-
-            htmlString += "</table>";
-
-            return htmlString;
       }
+
+      htmlString += "</table>";
+
+      return htmlString;
+}
